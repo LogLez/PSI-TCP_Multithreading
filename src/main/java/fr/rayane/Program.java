@@ -18,14 +18,14 @@ public class Program {
         //Create Scanner to read entries
         Scanner scanner = new Scanner(System.in);  // Create a Scanner object
 
-        int action = UtilsMessage.askAction(scanner);
+        int action = UtilsMessage.askAction(scanner); // Get action of the user
 
-        if (action == Action.SHUTDOWN.getAction())
+        if (action == Action.SHUTDOWN.getAction()) // Shutdown if action == shutdown
             return;
 
-        int port = UtilsMessage.askPort(scanner);
+        int port = UtilsMessage.askPort(scanner); // Get port number
 
-        if (port == Action.SHUTDOWN.getAction())
+        if (port == Action.SHUTDOWN.getAction()) // Shutdown if action == shutdown
             return;
 
         //Creation of the service !
@@ -41,8 +41,7 @@ public class Program {
 
     private static Server createServer(int port) throws IOException {
         try{
-            ServerSocket serverSocket = new ServerSocket(port);
-            Server server = new Server(serverSocket);
+            Server server = new Server(new ServerSocket(port));
             server.startServer();
             return server;
         } catch (IOException e) {
@@ -52,18 +51,14 @@ public class Program {
 
     private static Client createClient(int port) throws IOException {
         try {
-            Socket socket = new Socket("127.0.0.1", port);
-            Client client = new Client(socket);
-            client.listenForMessage();
-            client.sendMessage();
+            Client client = new Client(new Socket("127.0.0.1", port));
+            client.listeningForMessage();
+            client.sendingMessage();
             return client;
         } catch (IOException e) {
             return null;
         }
     }
-
-
-
 
     enum Action {
 

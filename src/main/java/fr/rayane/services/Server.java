@@ -1,14 +1,19 @@
 package fr.rayane.services;
 
+import fr.rayane.utils.ConsoleColors;
+import fr.rayane.utils.UtilsMessage;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Server {
 
     private ServerSocket serverSocket;
 
     public Server(ServerSocket serverSocket) {
+
         this.serverSocket = serverSocket;
     }
 
@@ -36,4 +41,5 @@ public class Server {
             e.printStackTrace();
         }
     }
+
 }
