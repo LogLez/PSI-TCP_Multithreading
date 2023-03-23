@@ -30,8 +30,8 @@ _This is a project for PSI course !_
 
 ### How can we use is TCP_Multithreading ?
 
-- First of all, you need to run the JAVA application.
-- Then, you will have to choose what is this terminal for (Server or Client).
+- First of all, you need to run the JAVA application you can see on the rootProject called "Lab1_MultiThread-1.0-SNAPSHOT-all".
+- Then, you will have to choose what is this terminal for (Server or Client) by selecting the correct number.
 - Then select a port number, which is the port that will be used for the socket (Server or Client).
 
 You can follow the instructions you can see on the terminal. Don't worry :)

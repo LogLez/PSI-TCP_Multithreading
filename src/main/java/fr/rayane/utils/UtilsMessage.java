@@ -61,7 +61,7 @@ public class UtilsMessage {
         if (args.length == 0)
             return message;
 
-        StringBuilder result = new StringBuilder(ConsoleColors.YELLOW_BOLD + "You: " + ConsoleColors.WHITE_BRIGHT);
+        StringBuilder result = new StringBuilder(ConsoleColors.YELLOW_BOLD + "You:" + ConsoleColors.WHITE_BRIGHT);
         for(int i = 1; i < args.length; i++)
             result.append(args[i]);
 
