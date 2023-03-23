@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 public class Program {
 
+
     public static void main(String[] args) throws IOException {
         UtilsMessage.welcomeMessage();
 
@@ -39,27 +40,39 @@ public class Program {
 
     }
 
-    private static Server createServer(int port) throws IOException {
+    /**
+     * Create a server on the specified port
+     * @param port
+     * @throws IOException
+     */
+    private static void createServer(int port) throws IOException {
         try{
             Server server = new Server(new ServerSocket(port));
             server.startServer();
-            return server;
         } catch (IOException e) {
-            return null;
+            e.printStackTrace();
         }
     }
 
-    private static Client createClient(int port) throws IOException {
+    /**
+     * Create a client on the specified port
+     * @param port
+     * @throws IOException
+     */
+    private static void createClient(int port) throws IOException {
         try {
             Client client = new Client(new Socket("127.0.0.1", port));
             client.listeningForMessage();
             client.sendingMessage();
-            return client;
         } catch (IOException e) {
-            return null;
+            e.printStackTrace();
         }
     }
 
+
+    /**
+     * Enumeration of possible actions of the application
+     */
     enum Action {
 
         SHUTDOWN(0),
@@ -67,7 +80,6 @@ public class Program {
         CREATE_CLIENT(2);
 
         private final int action;
-
         Action(int action) {
             this.action = action;
         }

@@ -1,32 +1,33 @@
 package fr.rayane.services;
 
-import com.github.javafaker.Faker;
 import fr.rayane.utils.ConsoleColors;
+import fr.rayane.utils.UtilsMessage;
+import fr.rayane.utils.UtilsStream;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class ClientHandler implements Runnable {
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+
     private Socket socket;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
     private String name;
 
+    /**
+     * Constructor of the ClientHandler
+     * @param socket : Socket of the client
+     */
     public ClientHandler(Socket socket){
         try {
 
             this.socket = socket;
             this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
             this.dataInputStream = new DataInputStream(socket.getInputStream());
-            int length= dataInputStream.readByte();
-            byte[] data =new byte[length];
-            dataInputStream.readFully(data);
-            this.name =  new String(data); //get name from initialization of the client;
+            this.name = UtilsStream.receiveMessage(dataInputStream); //Get name of the client that we just sent in the constructor of the Client
             broadcastMessage("GLOBAL --> " + ConsoleColors.CYAN + this.name + ConsoleColors.YELLOW + " has entered the chat" + ConsoleColors.RESET);
 
             ClientHandler.clientHandlers.add(this);
@@ -35,7 +36,9 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    //Runnable to read messages in LOOP
+    /**
+     * Read message and sent it to all ClientHandlers
+     */
     @Override
     public void run() {
 
@@ -43,10 +46,7 @@ public class ClientHandler implements Runnable {
 
         while(socket.isConnected()){
             try{
-                int length= dataInputStream.readByte();
-                byte[] data =new byte[length];
-                dataInputStream.readFully(data);
-                message =new String(data);
+                message = UtilsStream.receiveMessage(dataInputStream);
                 broadcastMessage(message);
             }catch (IOException e){
                 closeEverything();
@@ -56,25 +56,29 @@ public class ClientHandler implements Runnable {
 
     }
 
-    //Send the message to all Clients
+    /**
+     * Broadcast a message to all clients
+     * @param message : The message to send
+     */
     private void broadcastMessage(String message) {
         for(ClientHandler clientHandler : clientHandlers){
             try{
-//                if (!clientHandler.name.equalsIgnoreCase(this.name))
-//                    continue;
+                if (clientHandler.name.equalsIgnoreCase(this.name)){
+                    String ownMessage = UtilsMessage.removeNameFromMessage(message);
+                    UtilsStream.sendMessage(clientHandler.dataOutputStream, ownMessage);
+                    continue;
+                }
 
-                byte[] data = message.getBytes(StandardCharsets.UTF_8);
-                this.dataOutputStream.writeByte(data.length);
-                this.dataOutputStream.write(data);
-                this.dataOutputStream.flush();
-
+                UtilsStream.sendMessage(clientHandler.dataOutputStream, message);
             }catch (IOException e){
                 closeEverything();
             }
         }
     }
 
-
+    /**
+     * Close all streams and socket of this clientHandler
+     */
     public void closeEverything() {
         delete();
         try {
@@ -94,9 +98,14 @@ public class ClientHandler implements Runnable {
 
     }
 
+    /**
+     * Delete the clientHandler
+     */
     private void delete() {
         clientHandlers.remove(this);
         broadcastMessage("SERVER --> A client has left the chat" );
     }
 
+    public DataInputStream getDataInputStream() {return dataInputStream;}
+    public DataOutputStream getDataOutputStream() {return dataOutputStream;}
 }

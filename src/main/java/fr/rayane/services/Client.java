@@ -3,12 +3,11 @@ package fr.rayane.services;
 import com.github.javafaker.Faker;
 import fr.rayane.utils.ConsoleColors;
 import fr.rayane.utils.UtilsMessage;
+import fr.rayane.utils.UtilsStream;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class Client {
 
@@ -17,25 +16,30 @@ public class Client {
     private DataInputStream dataInputStream;
     private String name;
 
+    /**
+     * Constructor of Client
+     * @param socket : Socket of the client
+     * @throws IOException
+     */
     public Client(Socket socket) throws IOException {
         try{
             this.socket = socket;
             this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
             this.dataInputStream = new DataInputStream(socket.getInputStream());
             this.name = new Faker().name().firstName();
-
-            byte[] data = name.getBytes();
-            this.dataOutputStream.writeByte(data.length);
-            this.dataOutputStream.write(data);
-            this.dataOutputStream.flush();
+            UtilsStream.sendMessage(dataOutputStream, name); //Send name for the clientHandler
         }catch (IOException e){
             closeEverything();
         }
     }
 
+    /**
+     * Send message when client write in the console
+     * Message has to be lower than 255 characters
+     * The message will be reversed to the others clients
+     */
     public void sendingMessage() {
         try{
-            //Read message sending by this client (LOOP) for sending them
             Scanner scanner = new Scanner(System.in);
             while (socket.isConnected()){
                 String reverse = UtilsMessage.transformStringToReverse(scanner.nextLine());
@@ -45,11 +49,7 @@ public class Client {
                     System.out.println("The message length is more than 255 characters.\nYou cannot send it");
                     continue;
                 }
-
-                byte[] data = fullMsg.getBytes();
-                this.dataOutputStream.writeByte(data.length);
-                this.dataOutputStream.write(data);
-                this.dataOutputStream.flush();
+                UtilsStream.sendMessage(dataOutputStream, fullMsg);
             }
             closeEverything();
         }catch (IOException e){
@@ -57,8 +57,9 @@ public class Client {
         }
     }
 
-    //Listening of this client (LOOP)
-    //Read all message from server
+    /**
+     * Listen when the client receive a message from another client
+     */
     public void listeningForMessage(){
         new Thread(new Runnable() {
             @Override
@@ -67,9 +68,7 @@ public class Client {
 
                 while (socket.isConnected()){
                     try{
-                        byte[] data = new byte[dataInputStream.readByte()];
-                        dataInputStream.readFully(data);
-                        messageInServer =new String(data);
+                        messageInServer = UtilsStream.receiveMessage(dataInputStream);
                         System.out.println(messageInServer);
                     }catch (IOException e){
                         closeEverything();
@@ -80,7 +79,9 @@ public class Client {
         }).start();
     }
 
-    //ShutDown all Streams of this client
+    /**
+     * Close all streams and socket of this clientHandler
+     */
     private void closeEverything() {
 
         try{

@@ -1,6 +1,6 @@
 <h2 align="center">
 <br>
-  <img src="images/cmdapi.svg" alt="PSI logo" width="600">
+  <img src="images/PSI.png" alt="PSI logo">
   <br>
     <br>
         A TCP_Multithreading program

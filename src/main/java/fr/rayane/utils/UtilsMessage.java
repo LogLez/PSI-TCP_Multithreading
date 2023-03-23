@@ -1,10 +1,19 @@
 package fr.rayane.utils;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class UtilsMessage {
 
-    public static int askAction (Scanner scanner){
+
+    /**
+     * Ask action for the user in the console
+     * @param scanner
+     * @return the id of the action
+     */
+    public static int askAction(Scanner scanner){
         System.out.println(ConsoleColors.WHITE_BRIGHT + "Please, which service is this terminal for ? \n");
         System.out.println(ConsoleColors.WHITE + "1 - Server\n2 - Client\n0 - Exit the terminal");
 
@@ -21,6 +30,12 @@ public class UtilsMessage {
         return action;
     }
 
+
+    /**
+     * Ask port for the user in the console
+     * @param scanner
+     * @return the port number
+     */
     public static int askPort (Scanner scanner){
         System.out.println(ConsoleColors.WHITE_BRIGHT + "Which port number do you want to use ? (0 to exit)");
 
@@ -36,6 +51,26 @@ public class UtilsMessage {
         return port;
     }
 
+    /**
+     * Remove the name of a message and put "YOU" (Just for the sender)
+     * @param message
+     * @return
+     */
+    public static String removeNameFromMessage(String message){
+        String[] args = message.split(":");
+        if (args.length == 0)
+            return message;
+
+        StringBuilder result = new StringBuilder(ConsoleColors.YELLOW_BOLD + "You: " + ConsoleColors.WHITE_BRIGHT);
+        for(int i = 1; i < args.length; i++)
+            result.append(args[i]);
+
+        return result.toString();
+    }
+
+    /**
+     * Send first messages when the application is launched
+     */
     public static void welcomeMessage (){
         System.out.println(ConsoleColors.YELLOW + "###########################################################################");
         System.out.println(ConsoleColors.YELLOW +"#"+"                           "+ConsoleColors.GREEN_UNDERLINED +"WELCOME TO LAB1 v1.0"+ConsoleColors.YELLOW+"                          #"+ConsoleColors.RESET);
@@ -48,11 +83,16 @@ public class UtilsMessage {
 
     }
 
-    public static String transformStringToReverse(String name){
-        StringBuilder reversedMsg = new StringBuilder("");
-        for(int i = name.length() - 1; i >= 0; i--)
-            reversedMsg.append(name.charAt(i));
+    /**
+     * Reversed a message (ABCD --> DCBA)
+     * @param message : The message to need to be reversed
+     * @return reversed message
+     */
+    public static String transformStringToReverse(String message){
+        StringBuilder reversed = new StringBuilder("");
+        for(int i = message.length() - 1; i >= 0; i--)
+            reversed.append(message.charAt(i));
 
-        return reversedMsg.toString();
+        return reversed.toString();
     }
 }
